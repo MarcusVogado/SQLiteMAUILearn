@@ -11,7 +11,9 @@ namespace People
     {
         public static string GetLocalFilePath(string filename)
         {
-            return System.IO.Path.Combine(FileSystem.AppDataDirectory, filename);
+            var basePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            return Path.Combine(basePath,filename);
+            
         }
     }
 }

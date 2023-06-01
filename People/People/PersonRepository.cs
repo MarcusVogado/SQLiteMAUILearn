@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using People.Models;
+using SQLite;
 
 namespace People
 {
@@ -12,12 +14,16 @@ namespace People
 
         public string StatusMessage { get; set; }
 
-        // TODO: Add variable for the SQLite connection
+        private SQLiteConnection conn;
 
-        private void Init()
+        private  void Init()
         {
-            // TODO: Add code to initialize the repository         
+            if (conn != null) return;
+
+            conn =  new SQLiteConnection(_dbPath);
+            conn.CreateTable<Person>();
         }
+            
 
         public PersonRepository(string dbPath)
         {
@@ -29,13 +35,11 @@ namespace People
             int result = 0;
             try
             {
-                // TODO: Call Init()
-
-                // basic validation to ensure a name was entered
+                Init();             
                 if (string.IsNullOrEmpty(name))
                     throw new Exception("Valid name required");
 
-                // TODO: Insert the new person into the database
+                result = conn.Insert(new Person { Name = name });
                 result = 0;
 
                 StatusMessage = string.Format("{0} record(s) added (Name: {1})", result, name);
@@ -48,11 +52,11 @@ namespace People
         }
 
         public List<Person> GetAllPeople()
-        {
-            // TODO: Init then retrieve a list of Person objects from the database into a list
+        {           
             try
             {
-                
+                Init();
+                return conn.Table<Person>().ToList();
             }
             catch (Exception ex)
             {
